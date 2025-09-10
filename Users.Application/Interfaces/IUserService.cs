@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UserManagement.Application.Dtos.UsersDtos;
+
+namespace UserManagement.Application.Interfaces
+{
+    public interface IUserService
+    {
+        Task<IEnumerable<UserGetDto>> GetAllAsync();
+        Task<UserGetDto?> GetByIdAsync(int id);
+        Task<UserGetDto> AddAsync(UserPostDto dto);
+        Task<UserGetDto?> UpdateAsync(int id, UserPutDto dto);
+        Task<bool> DeleteAsync(int id);
+    }
+}
