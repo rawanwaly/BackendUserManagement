@@ -87,5 +87,19 @@ namespace UserManagement.API.Controllers
             _logger.LogInformation("User with Id={id} deleted successfully", id);
             return NoContent();
         }
+        [HttpGet("check-email")]
+        public async Task<IActionResult> CheckEmail([FromQuery] string email)
+        {
+            var exists = await _service.IsEmailExistsAsync(email);
+            return Ok(exists);
+        }
+
+        [HttpGet("check-mobile")]
+        public async Task<IActionResult> CheckMobile([FromQuery] string mobile)
+        {
+            var exists = await _service.IsMobileExistsAsync(mobile);
+            return Ok(exists);
+        }
+
     }
 }

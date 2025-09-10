@@ -14,5 +14,8 @@ namespace UserManagement.Application.Interfaces
         Task<UserGetDto> AddAsync(UserPostDto dto);
         Task<UserGetDto?> UpdateAsync(int id, UserPutDto dto);
         Task<bool> DeleteAsync(int id);
+        Task<bool> IsEmailExistsAsync(string email);
+        Task<bool> IsMobileExistsAsync(string mobile);
+
     }
 }

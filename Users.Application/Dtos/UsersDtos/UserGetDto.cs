@@ -9,6 +9,6 @@ namespace UserManagement.Application.Dtos.UsersDtos
     public class UserGetDto : UserBaseDto
     {
         public int Id { get; set; }
-        public string MaritalStatusName { get; set; }
+        public string MaritalStatus { get; set; } 
     }
 }

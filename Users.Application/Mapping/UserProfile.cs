@@ -14,7 +14,7 @@ namespace UserManagement.Application.Mapping
         public UserProfile()
         {
             CreateMap<User, UserGetDto>()
-                .ForMember(dest => dest.MaritalStatusName,
+                .ForMember(dest => dest.MaritalStatus,
                            opt => opt.MapFrom(src => src.MaritalStatus.ToString()));
 
             CreateMap<UserPostDto, User>();

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,6 +63,18 @@ namespace UserManagement.Infrastructure.Repositories
             await _repo.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> IsEmailExistsAsync(string email)
+        {
+            var user = await _repo.GetByEmailAsync(email);
+            return user != null;
+        }
+
+        public async Task<bool> IsMobileExistsAsync(string mobile)
+        {
+            var user = await _repo.GetByMobileAsync(mobile);
+            return user != null;
+        }
+
     }
 
 }

@@ -8,5 +8,6 @@ namespace UserManagement.Application.Dtos.UsersDtos
 {
     public class UserPostDto : UserBaseDto
     {
+        public int MaritalStatus { get; set; }
     }
 }

@@ -9,5 +9,7 @@ namespace UserManagement.Application.Dtos.UsersDtos
     public class UserPutDto : UserBaseDto
     {
         public int Id { get; set; }
+        public int MaritalStatus { get; set; }
+
     }
 }
