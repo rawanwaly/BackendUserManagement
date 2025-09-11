@@ -88,18 +88,19 @@ namespace UserManagement.API.Controllers
             return NoContent();
         }
         [HttpGet("check-email")]
-        public async Task<IActionResult> CheckEmail([FromQuery] string email)
+        public async Task<IActionResult> CheckEmail(string email,int? excludeId)
         {
-            var exists = await _service.IsEmailExistsAsync(email);
+            var exists = await _service.IsEmailExistsAsync(email, excludeId);
             return Ok(exists);
         }
 
         [HttpGet("check-mobile")]
-        public async Task<IActionResult> CheckMobile([FromQuery] string mobile)
+        public async Task<IActionResult> CheckMobile(string mobile, int? excludeId)
         {
-            var exists = await _service.IsMobileExistsAsync(mobile);
+            var exists = await _service.IsMobileExistsAsync(mobile, excludeId);
             return Ok(exists);
         }
+
 
     }
 }

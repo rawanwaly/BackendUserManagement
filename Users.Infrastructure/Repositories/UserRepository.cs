@@ -17,15 +17,17 @@ namespace UserManagement.Infrastructure.Repositories
         {
             _context = context;
         }
-
-        public async Task<User?> GetByEmailAsync(string email)
+        public async Task<User?> GetByEmailAsync(string email, int? excludeId = null)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email && (!excludeId.HasValue || u.Id != excludeId.Value));
         }
 
-        public async Task<User?> GetByMobileAsync(string mobile)
+        public async Task<User?> GetByMobileAsync(string mobile, int? excludeId = null)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.MobileNumber == mobile);
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.MobileNumber == mobile && (!excludeId.HasValue || u.Id != excludeId.Value));
         }
+
     }
 }

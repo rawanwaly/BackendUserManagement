@@ -63,17 +63,18 @@ namespace UserManagement.Infrastructure.Repositories
             await _repo.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> IsEmailExistsAsync(string email)
+        public async Task<bool> IsEmailExistsAsync(string email, int? excludeId = null)
         {
-            var user = await _repo.GetByEmailAsync(email);
+            var user = await _repo.GetByEmailAsync(email, excludeId);
             return user != null;
         }
 
-        public async Task<bool> IsMobileExistsAsync(string mobile)
+        public async Task<bool> IsMobileExistsAsync(string mobile, int? excludeId = null)
         {
-            var user = await _repo.GetByMobileAsync(mobile);
+            var user = await _repo.GetByMobileAsync(mobile, excludeId);
             return user != null;
         }
+
 
     }
 

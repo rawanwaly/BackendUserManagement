@@ -9,7 +9,7 @@ namespace UserManagement.Application.Interfaces
 {
     public interface IUserRepository : IRepository<User>
     {
-        Task<User?> GetByEmailAsync(string email);
-        Task<User?> GetByMobileAsync(string mobile);
+         Task<User?> GetByMobileAsync(string mobile, int? excludeId = null);
+         Task<User?> GetByEmailAsync(string email, int? excludeId = null);
     }
 }
