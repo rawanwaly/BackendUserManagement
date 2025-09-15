@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UserManagement.Application.Dtos.UsersDtos;
 using UserManagement.Application.Interfaces;
+using UserManagement.Application.Shared;
 using UserManagement.Domain.Core.Models;
 
 namespace UserManagement.Infrastructure.Repositories
@@ -74,7 +75,16 @@ namespace UserManagement.Infrastructure.Repositories
             var user = await _repo.GetByMobileAsync(mobile, excludeId);
             return user != null;
         }
+        public async Task<PagedResult<UserGetDto>> GetPagedUsersAsync(GridParams gridParams, bool useServerSide)
+        {
+            var pagedUsers = await _repo.GetPagedUsersAsync(gridParams, useServerSide);
 
+            return new PagedResult<UserGetDto>
+            {
+                Data = _mapper.Map<IEnumerable<UserGetDto>>(pagedUsers.Data),
+                TotalRecords = pagedUsers.TotalRecords
+            };
+        }
 
     }
 

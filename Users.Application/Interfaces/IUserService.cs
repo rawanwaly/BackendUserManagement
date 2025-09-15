@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UserManagement.Application.Dtos.UsersDtos;
+using UserManagement.Application.Shared;
 
 namespace UserManagement.Application.Interfaces
 {
@@ -16,6 +17,8 @@ namespace UserManagement.Application.Interfaces
         Task<bool> DeleteAsync(int id);
         Task<bool> IsEmailExistsAsync(string email, int? excludeId = null);
         Task<bool> IsMobileExistsAsync(string mobile, int? excludeId = null);
+        Task<PagedResult<UserGetDto>> GetPagedUsersAsync(GridParams gridParams, bool useServerSide);
+
 
     }
 }

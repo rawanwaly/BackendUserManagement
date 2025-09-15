@@ -7,6 +7,7 @@ using Serilog;
 using UserManagement.API.Middleware;
 using UserManagement.Application.Interfaces;
 using UserManagement.Application.Mapping;
+using UserManagement.Application.Shared;
 using UserManagement.Application.Validators;
 using UserManagement.Infrastructure;
 using UserManagement.Infrastructure.Repositories;
@@ -32,6 +33,7 @@ namespace UsersAPI
             // ------------------------------------------------------
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.Configure<GridSettings>(builder.Configuration.GetSection("GridSettings"));
 
             // ------------------------------------------------------
             // 2. Add Controllers + FluentValidation

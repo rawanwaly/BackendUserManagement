@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using UserManagement.Application.Dtos.UsersDtos;
 using UserManagement.Application.Interfaces;
+using UserManagement.Application.Shared;
 
 namespace UserManagement.API.Controllers
 {
@@ -11,13 +12,25 @@ namespace UserManagement.API.Controllers
     {
         private readonly IUserService _service;
         private readonly ILogger<UsersController> _logger;
+        private readonly IConfiguration _config;
 
-        public UsersController(IUserService service, ILogger<UsersController> logger)
+        public UsersController(IUserService service, ILogger<UsersController> logger, IConfiguration config)
         {
             _service = service;
             _logger = logger;
+            _config = config;
         }
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetPaged([FromQuery] GridParams gridParams)
+        {
+            bool useServerSide = _config.GetValue<bool>("GridSettings:UseServerSide");
 
+            _logger.LogInformation("Fetching paged users. ServerSide={useServerSide}", useServerSide);
+
+            var result = await _service.GetPagedUsersAsync(gridParams, useServerSide);
+
+            return Ok(result);
+        }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

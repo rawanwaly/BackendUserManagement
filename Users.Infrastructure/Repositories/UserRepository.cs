@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UserManagement.Application.Interfaces;
+using UserManagement.Application.Shared;
 using UserManagement.Domain.Core.Models;
 
 namespace UserManagement.Infrastructure.Repositories
@@ -29,5 +25,56 @@ namespace UserManagement.Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.MobileNumber == mobile && (!excludeId.HasValue || u.Id != excludeId.Value));
         }
 
+        public async Task<PagedResult<User>> GetPagedUsersAsync(GridParams gridParams, bool useServerSide)
+        {
+            var query = _context.Users.AsQueryable();
+
+            // Apply Search
+            if (!string.IsNullOrWhiteSpace(gridParams.Search))
+            {
+                string search = gridParams.Search.ToLower();
+                query = query.Where(u =>
+                    u.FirstNameEN.ToLower().Contains(search) ||
+                    u.LastNameEN.ToLower().Contains(search) ||
+                    u.FirstNameAR.ToLower().Contains(search) ||
+                    u.LastNameAR.ToLower().Contains(search) ||
+                    u.Email.ToLower().Contains(search) ||
+                    u.MobileNumber.Contains(search)
+                );
+            }
+
+            // Client-side mode
+            if (!useServerSide)
+            {
+                var all = await query.ToListAsync();
+                return new PagedResult<User>
+                {
+                    Data = all,
+                    TotalRecords = all.Count
+                };
+            }
+
+            // Server-side sorting
+            if (!string.IsNullOrEmpty(gridParams.SortColumn))
+            {
+                bool ascending = gridParams.SortDirection.ToLower() == "asc";
+                query = ascending
+                    ? query.OrderBy(e => EF.Property<object>(e, gridParams.SortColumn))
+                    : query.OrderByDescending(e => EF.Property<object>(e, gridParams.SortColumn));
+            }
+
+            int total = await query.CountAsync();
+
+            var data = await query
+                .Skip((gridParams.Page - 1) * gridParams.PageSize)
+                .Take(gridParams.PageSize)
+                .ToListAsync();
+
+            return new PagedResult<User>
+            {
+                Data = data,
+                TotalRecords = total
+            };
+        }
     }
 }
