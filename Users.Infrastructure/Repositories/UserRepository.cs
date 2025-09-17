@@ -25,7 +25,7 @@ namespace UserManagement.Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.MobileNumber == mobile && (!excludeId.HasValue || u.Id != excludeId.Value));
         }
 
-        public async Task<PagedResult<User>> GetPagedUsersAsync(GridParams gridParams, bool useServerSide)
+        public async Task<PagedResult<User>> GetPagedUsersAsync(GridParams gridParams)
         {
             var query = _context.Users.AsQueryable();
 
@@ -43,24 +43,15 @@ namespace UserManagement.Infrastructure.Repositories
                 );
             }
 
-            // Client-side mode
-            if (!useServerSide)
-            {
-                var all = await query.ToListAsync();
-                return new PagedResult<User>
-                {
-                    Data = all,
-                    TotalRecords = all.Count
-                };
-            }
-
             // Server-side sorting
             if (!string.IsNullOrEmpty(gridParams.SortColumn))
             {
+                var property = char.ToUpper(gridParams.SortColumn[0]) + gridParams.SortColumn.Substring(1);
+
                 bool ascending = gridParams.SortDirection.ToLower() == "asc";
                 query = ascending
-                    ? query.OrderBy(e => EF.Property<object>(e, gridParams.SortColumn))
-                    : query.OrderByDescending(e => EF.Property<object>(e, gridParams.SortColumn));
+                    ? query.OrderBy(e => EF.Property<object>(e, property))
+                    : query.OrderByDescending(e => EF.Property<object>(e, property));
             }
 
             int total = await query.CountAsync();

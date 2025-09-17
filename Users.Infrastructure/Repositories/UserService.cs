@@ -75,9 +75,9 @@ namespace UserManagement.Infrastructure.Repositories
             var user = await _repo.GetByMobileAsync(mobile, excludeId);
             return user != null;
         }
-        public async Task<PagedResult<UserGetDto>> GetPagedUsersAsync(GridParams gridParams, bool useServerSide)
+        public async Task<PagedResult<UserGetDto>> GetPagedUsersAsync(GridParams gridParams)
         {
-            var pagedUsers = await _repo.GetPagedUsersAsync(gridParams, useServerSide);
+            var pagedUsers = await _repo.GetPagedUsersAsync(gridParams);
 
             return new PagedResult<UserGetDto>
             {

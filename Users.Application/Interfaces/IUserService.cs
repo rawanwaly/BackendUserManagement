@@ -17,7 +17,7 @@ namespace UserManagement.Application.Interfaces
         Task<bool> DeleteAsync(int id);
         Task<bool> IsEmailExistsAsync(string email, int? excludeId = null);
         Task<bool> IsMobileExistsAsync(string mobile, int? excludeId = null);
-        Task<PagedResult<UserGetDto>> GetPagedUsersAsync(GridParams gridParams, bool useServerSide);
+        Task<PagedResult<UserGetDto>> GetPagedUsersAsync(GridParams gridParams);
 
 
     }

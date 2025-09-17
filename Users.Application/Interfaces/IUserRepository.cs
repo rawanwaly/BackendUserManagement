@@ -10,8 +10,8 @@ namespace UserManagement.Application.Interfaces
 {
     public interface IUserRepository : IRepository<User>
     {
-         Task<User?> GetByMobileAsync(string mobile, int? excludeId = null);
+          Task<User?> GetByMobileAsync(string mobile, int? excludeId = null);
          Task<User?> GetByEmailAsync(string email, int? excludeId = null);
-        Task<PagedResult<User>> GetPagedUsersAsync(GridParams gridParams, bool useServerSide);
+        Task<PagedResult<User>> GetPagedUsersAsync(GridParams gridParams);
     }
 }

@@ -23,11 +23,8 @@ namespace UserManagement.API.Controllers
         [HttpGet("paged")]
         public async Task<IActionResult> GetPaged([FromQuery] GridParams gridParams)
         {
-            bool useServerSide = _config.GetValue<bool>("GridSettings:UseServerSide");
 
-            _logger.LogInformation("Fetching paged users. ServerSide={useServerSide}", useServerSide);
-
-            var result = await _service.GetPagedUsersAsync(gridParams, useServerSide);
+            var result = await _service.GetPagedUsersAsync(gridParams);
 
             return Ok(result);
         }
