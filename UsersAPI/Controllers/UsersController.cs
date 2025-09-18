@@ -110,6 +110,12 @@ namespace UserManagement.API.Controllers
             var exists = await _service.IsMobileExistsAsync(mobile, excludeId);
             return Ok(exists);
         }
+        [HttpGet("all-ids")]
+        public async Task<IActionResult> GetAllIds([FromQuery] string? search)
+        {
+            var ids = await _service.GetAllIdsAsync(search);
+            return Ok(ids);
+        }
 
 
     }

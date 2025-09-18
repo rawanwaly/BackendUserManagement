@@ -85,6 +85,11 @@ namespace UserManagement.Infrastructure.Repositories
                 TotalRecords = pagedUsers.TotalRecords
             };
         }
+        public async Task<List<int>> GetAllIdsAsync(string? search = null)
+        {
+            return await _repo.GetAllIdsAsync(search);
+        }
+
 
     }
 

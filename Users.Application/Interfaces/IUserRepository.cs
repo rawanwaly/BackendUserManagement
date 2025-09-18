@@ -12,6 +12,7 @@ namespace UserManagement.Application.Interfaces
     {
           Task<User?> GetByMobileAsync(string mobile, int? excludeId = null);
          Task<User?> GetByEmailAsync(string email, int? excludeId = null);
+        Task<List<int>> GetAllIdsAsync(string? search = null);
         Task<PagedResult<User>> GetPagedUsersAsync(GridParams gridParams);
     }
 }

@@ -11,6 +11,7 @@ namespace UserManagement.Application.Interfaces
     public interface IUserService
     {
         Task<IEnumerable<UserGetDto>> GetAllAsync();
+        Task<List<int>> GetAllIdsAsync(string? search = null);
         Task<UserGetDto?> GetByIdAsync(int id);
         Task<UserGetDto> AddAsync(UserPostDto dto);
         Task<UserGetDto?> UpdateAsync(int id, UserPutDto dto);

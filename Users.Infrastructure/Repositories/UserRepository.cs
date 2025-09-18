@@ -24,6 +24,25 @@ namespace UserManagement.Infrastructure.Repositories
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.MobileNumber == mobile && (!excludeId.HasValue || u.Id != excludeId.Value));
         }
+        public async Task<List<int>> GetAllIdsAsync(string? search = null)
+        {
+            var query = _context.Users.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string lowerSearch = search.ToLower();
+                query = query.Where(u =>
+                    u.FirstNameEN.ToLower().Contains(lowerSearch) ||
+                    u.LastNameEN.ToLower().Contains(lowerSearch) ||
+                    u.FirstNameAR.ToLower().Contains(lowerSearch) ||
+                    u.LastNameAR.ToLower().Contains(lowerSearch) ||
+                    u.Email.ToLower().Contains(lowerSearch) ||
+                    u.MobileNumber.Contains(lowerSearch)
+                );
+            }
+
+            return await query.Select(u => u.Id).ToListAsync();
+        }
 
         public async Task<PagedResult<User>> GetPagedUsersAsync(GridParams gridParams)
         {
