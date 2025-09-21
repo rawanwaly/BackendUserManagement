@@ -15,10 +15,14 @@ namespace UserManagement.Application.Interfaces
         Task<UserGetDto?> GetByIdAsync(int id);
         Task<UserGetDto> AddAsync(UserPostDto dto);
         Task<UserGetDto?> UpdateAsync(int id, UserPutDto dto);
-        Task<bool> DeleteAsync(int id);
         Task<bool> IsEmailExistsAsync(string email, int? excludeId = null);
         Task<bool> IsMobileExistsAsync(string mobile, int? excludeId = null);
         Task<PagedResult<UserGetDto>> GetPagedUsersAsync(GridParams gridParams);
+        Task<IEnumerable<UserGetDto>> GetForExportByIdsAsync(List<int> ids);
+        Task<bool> DeactivateAllAsync(List<int> ids);
+        Task<bool> DeactivateAsync(int id);
+        Task<bool> ActivateAsync(int id);
+        Task<bool> ActivateSelectedAsync(List<int> ids);
 
 
     }

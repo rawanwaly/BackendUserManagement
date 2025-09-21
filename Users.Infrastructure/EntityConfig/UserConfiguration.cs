@@ -48,6 +48,8 @@ namespace UserManagement.Infrastructure.EntityConfig
 
             builder.HasIndex(u => u.Email).IsUnique();
             builder.HasIndex(u => u.MobileNumber).IsUnique();
+            builder.Property(u => u.isActive).HasDefaultValue(true);
+
         }
     }
 }

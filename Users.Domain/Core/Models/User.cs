@@ -19,5 +19,6 @@ namespace UserManagement.Domain.Core.Models
         public string? Address { get; set; }
         public string MobileNumber { get; set; }
         public MaritalStatus MaritalStatus{ get; set; }
+        public bool isActive { get; set; } = true;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UserManagement.Application.Dtos.UsersDtos;
 using UserManagement.Application.Interfaces;
@@ -81,22 +82,6 @@ namespace UserManagement.API.Controllers
             _logger.LogInformation("User with Id={id} updated successfully", id);
             return Ok(updatedUser);
         }
-
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            _logger.LogInformation("Deleting user with Id={id}", id);
-
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
-            {
-                _logger.LogWarning("Delete failed. User with Id={id} not found", id);
-                return NotFound();
-            }
-
-            _logger.LogInformation("User with Id={id} deleted successfully", id);
-            return NoContent();
-        }
         [HttpGet("check-email")]
         public async Task<IActionResult> CheckEmail(string email,int? excludeId)
         {
@@ -115,6 +100,122 @@ namespace UserManagement.API.Controllers
         {
             var ids = await _service.GetAllIdsAsync(search);
             return Ok(ids);
+        }
+        [HttpPut("deactivate/{id:int}")]
+        public async Task<IActionResult> Deactivate(int id)
+        {
+            _logger.LogInformation("Deactivating user with Id={id}", id);
+
+            var success = await _service.DeactivateAsync(id);
+            if (!success)
+            {
+                _logger.LogWarning("Deactivate failed. User with Id={id} not found", id);
+                return NotFound();
+            }
+
+            _logger.LogInformation("User with Id={id} deactivated successfully", id);
+            return NoContent();
+        }
+        [HttpPut("deactivate-selected")]
+        public async Task<IActionResult> DeactivateSelected([FromBody] List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+                return BadRequest("No user IDs provided.");
+
+            _logger.LogInformation("Deactivating {count} selected users at {time}", ids.Count, DateTime.UtcNow);
+
+            await _service.DeactivateAllAsync(ids);
+
+            _logger.LogInformation("Selected users deactivated successfully");
+            return NoContent();
+        }
+        [HttpPut("activate/{id:int}")]
+        public async Task<IActionResult> Activate(int id)
+        {
+            _logger.LogInformation("Activating user with Id={id}", id);
+
+            var success = await _service.ActivateAsync(id);
+            if (!success)
+            {
+                _logger.LogWarning("Activate failed. User with Id={id} not found or already active", id);
+                return NotFound();
+            }
+
+            _logger.LogInformation("User with Id={id} activated successfully", id);
+            return NoContent();
+        }
+
+        [HttpPut("activate-selected")]
+        public async Task<IActionResult> ActivateSelected([FromBody] List<int> ids)
+        {
+            if (ids == null || !ids.Any()) return BadRequest("No user IDs provided.");
+
+            _logger.LogInformation("Activating selected users at {time}", DateTime.UtcNow);
+
+            var success = await _service.ActivateSelectedAsync(ids);
+            if (!success)
+            {
+                return NotFound("No users were activated (maybe already active).");
+            }
+
+            _logger.LogInformation("Selected users activated successfully");
+            return NoContent();
+        }
+
+        [HttpPost("export-excel")]
+        public async Task<IActionResult> ExportToExcel([FromBody] List<int> ids)
+        {
+            _logger.LogInformation("Exporting {count} selected users to Excel at {time}", ids.Count, DateTime.UtcNow);
+
+            var users = await _service.GetForExportByIdsAsync(ids);
+            if (!users.Any())
+            {
+                return NotFound("No users found to export.");
+            }
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Users");
+
+            var columns = new (string Header, Func<UserGetDto, object?> Value)[]
+            {
+                ("Id", u => u.Id),
+                ("First Name (EN)", u => u.FirstNameEN),
+                ("Last Name (EN)", u => u.LastNameEN),
+                ("First Name (AR)", u => u.FirstNameAR),
+                ("Last Name (AR)", u => u.LastNameAR),
+                ("Email", u => u.Email),
+                ("Mobile", u => u.MobileNumber),
+                ("Marital Status", u => u.MaritalStatus),
+                ("Address ", u => u.Address),
+                ("Is Active", u => u.isActive ? "Active" : "Inactive"),
+
+             };
+
+            for (int i = 0; i < columns.Length; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = columns[i].Header;
+            }
+
+            int row = 2;
+            foreach (var user in users)
+            {
+                for (int col = 0; col < columns.Length; col++)
+                {
+                    worksheet.Cell(row, col + 1).Value = columns[col].Value(user)?.ToString();
+                }
+                row++;
+            }
+
+            worksheet.Columns().AdjustToContents();
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+
+            return File(
+                stream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"Users_{DateTime.UtcNow:yyyyMMddHHmmss}.xlsx"
+            );
         }
 
 

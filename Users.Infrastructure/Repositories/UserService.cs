@@ -54,16 +54,6 @@ namespace UserManagement.Infrastructure.Repositories
 
             return _mapper.Map<UserGetDto>(user);
         }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var user = await _repo.GetByIdAsync(id);
-            if (user == null) return false;
-
-            _repo.Remove(user);
-            await _repo.SaveChangesAsync();
-            return true;
-        }
         public async Task<bool> IsEmailExistsAsync(string email, int? excludeId = null)
         {
             var user = await _repo.GetByEmailAsync(email, excludeId);
@@ -88,6 +78,56 @@ namespace UserManagement.Infrastructure.Repositories
         public async Task<List<int>> GetAllIdsAsync(string? search = null)
         {
             return await _repo.GetAllIdsAsync(search);
+        }
+        public async Task<bool> DeactivateAsync(int id)
+        {
+            var user = await _repo.GetByIdAsync(id);
+            if (user == null) return false;
+
+            user.isActive = false;
+            _repo.Update(user);
+            await _repo.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeactivateAllAsync(List<int> ids)
+        {
+            await _repo.DeactivateAllAsync(ids);
+            await _repo.SaveChangesAsync();
+            return true;
+        }
+        public async Task<IEnumerable<UserGetDto>> GetForExportByIdsAsync(List<int> ids)
+        {
+            var users = await _repo.GetForExportByIdsAsync(ids);
+            return _mapper.Map<IEnumerable<UserGetDto>>(users);
+        }
+
+        public async Task<bool> ActivateAsync(int id)
+        {
+            var user = await _repo.GetByIdAsync(id);
+            if (user == null || user.isActive) return false;
+
+            user.isActive = true;
+            _repo.Update(user);
+            await _repo.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ActivateSelectedAsync(List<int> ids)
+        {
+            var users = await _repo.GetAllAsync();
+            var selectedUsers = users.Where(u => ids.Contains(u.Id) && !u.isActive).ToList();
+
+            if (!selectedUsers.Any()) return false;
+
+            foreach (var user in selectedUsers)
+            {
+                user.isActive = true;
+                _repo.Update(user);
+            }
+
+            await _repo.SaveChangesAsync();
+            return true;
         }
 
 

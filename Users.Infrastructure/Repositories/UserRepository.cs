@@ -86,5 +86,19 @@ namespace UserManagement.Infrastructure.Repositories
                 TotalRecords = total
             };
         }
+        public async Task DeactivateAllAsync(List<int> ids)
+        {
+            await _context.Users
+                .Where(u => ids.Contains(u.Id) && u.isActive) 
+                .ExecuteUpdateAsync(u => u.SetProperty(x => x.isActive, false));
+        }
+        public async Task<List<User>> GetForExportByIdsAsync(List<int> ids)
+        {
+            return await _context.Users
+                .Where(u => ids.Contains(u.Id))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
     }
 }
